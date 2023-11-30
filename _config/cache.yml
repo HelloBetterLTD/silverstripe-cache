@@ -1,0 +1,13 @@
+---
+Name: 'silverstripe-cache'
+---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Control\Director:
+    properties:
+      Middlewares:
+        CacheMiddleware: '%$HelloBetter\Cache\Control\CacheMiddleware'
+  Psr\SimpleCache\CacheInterface.SiteCache:
+    factory: SilverStripe\Core\Cache\CacheFactory
+    constructor:
+      defaultLifetime: 600
+      namespace: "SiteCache"
