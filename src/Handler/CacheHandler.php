@@ -22,7 +22,7 @@ class CacheHandler implements Flushable
     private static $enabled = true;
     private static $ignoredClasses = [];
     private static $ignoredHeaders = []; // TODO:
-    private static $ignoredPatterns = '/(^\/admin)|(^\/dev)|(^\/Security)|(^\/graphql)/';
+    private static $ignoredPatterns = '/(^\/?admin)|(^\/?dev)|(^\/?Security)|(^\/?graphql)/';
     private static $cache_ajax = true;
     private static $inst = null;
     private static $cacheHeader = 'X-Cache';
@@ -76,6 +76,10 @@ class CacheHandler implements Flushable
     {
         $enabled = self::config()->get('enabled');
 
+        if (($stage = Versioned::get_stage()) && $stage !== Versioned::LIVE) {
+            $enabled = false;
+        }
+
         // ajax check
         if ($request->isAjax() && !self::config()->get('cacheAjax')) {
             $enabled = false;
@@ -87,8 +91,8 @@ class CacheHandler implements Flushable
         }
 
         // ignored patterns
-        if (($ignored = self::config()->get('ignoredPatterns'))
-            && preg_match($ignored, $request->getURL())) {
+        $ignored = self::config()->get('ignoredPatterns');
+        if ($ignored && preg_match($ignored, $request->getURL()) === 1) {
             $enabled = false;
         }
 
@@ -163,7 +167,7 @@ class CacheHandler implements Flushable
                 'stage' => Versioned::get_stage(),
             ];
             $this->invokeWithExtensions('updateKeyFragments', $fragments);
-            $this->_key = 'SC_' . md5(http_build_query($fragments));
+            $this->_key = 'static_' . md5(http_build_query($fragments));
         }
         return $this->_key;
     }

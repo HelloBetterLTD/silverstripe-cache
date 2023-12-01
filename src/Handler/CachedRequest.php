@@ -33,7 +33,7 @@ class CachedRequest
                 $body = preg_replace(
                     '/\<input type="hidden" name="SecurityID" value="\w+"/',
                     "<input type=\"hidden\" name=\"SecurityID\" value=\"{$securityId}\"",
-                    $body
+                    $body ?? ''
                 );
                 $this->response->setBody($body);
             }
