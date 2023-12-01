@@ -1,0 +1,7 @@
+---
+Name: 'silverstripe-cache-config'
+---
+SilverStripe\Core\Manifest\ModuleManifest:
+  module_priority:
+    - silverstripe/versioned
+    - hellobetter/silverstripe-cache
