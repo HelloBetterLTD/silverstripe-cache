@@ -22,7 +22,8 @@ class CacheHandler implements Flushable
     private static $enabled = true;
     private static $ignoredClasses = [];
     private static $ignoredHeaders = []; // TODO:
-    private static $ignoredPatterns = '/(^\/?admin)|(^\/?dev)|(^\/?Security)|(^\/?graphql)/';
+    private static $systemIgnoredPatterns = '/(^\/?admin)|(^\/?dev)|(^\/?Security)|(^\/?graphql)/';
+    private static $ignoredPatterns = null;
     private static $cache_ajax = true;
     private static $inst = null;
     private static $cacheHeader = 'X-Cache';
@@ -91,6 +92,10 @@ class CacheHandler implements Flushable
         }
 
         // ignored patterns
+        $sysIgnored = self::config()->get('systemIgnoredPatterns');
+        if ($sysIgnored && preg_match($sysIgnored, $request->getURL()) === 1) {
+            $enabled = false;
+        }
         $ignored = self::config()->get('ignoredPatterns');
         if ($ignored && preg_match($ignored, $request->getURL()) === 1) {
             $enabled = false;
